@@ -1,0 +1,27 @@
+# Ignore .env file to keep sensitive information secure
+.env
+
+# Node.js dependencies
+node_modules/
+
+# Build output
+/dist
+/build
+
+# Log files
+*.log
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# npm package lock file (optional)
+package-lock.json
+
+# IDE/editor configurations
+.vscode/
+.idea/
+
+# other potential files
+/.eslintcache
+/.nyc_output/
