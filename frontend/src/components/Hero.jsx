@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import '../styles/Hero.css';
 
 const Hero = () => {
@@ -8,12 +9,12 @@ const Hero = () => {
         Join our community and grow in faith together. Explore our events and small groups.
       </p>
       <div className="button-container">
-        <button className="primary-button">
+        <Link to="/events" className="primary-button">
           View Events
-        </button>
-        <button className="primary-button">
+        </Link>
+        <Link to="/small-groups" className="primary-button">
           Explore Small Groups
-        </button>
+        </Link>
       </div>
     </div>
   );

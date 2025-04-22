@@ -50,9 +50,9 @@ const About = () => {
         <h2>Our Pastor</h2>
         <div className="pastor-info">
           <div className="pastor-content">
-            <h3>Pastor David Rodriguez</h3>
-            <p>Pastor David has been leading our congregation since 2010. With his 
-              wife Maria, they have created a vibrant, multicultural church family 
+            <h3>Pastor X</h3>
+            <p>Pastor X has been leading our congregation since 2010. With his 
+              wife X, they have created a vibrant, multicultural church family 
               focused on prayer, worship, and community outreach.</p>
           </div>
         </div>
