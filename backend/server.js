@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
 import eventRoutes from './routes/events.js';
+import smallGroupRoutes from './routes/small_groups.js';
 
 dotenv.config();
 const app = express();
@@ -14,6 +15,7 @@ app.use(express.json());
 
 // Routes
 app.use('/events', eventRoutes);
+app.use('/small-groups', smallGroupRoutes);
 
 // Server startup
 app.listen(PORT, () => {
