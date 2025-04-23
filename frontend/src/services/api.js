@@ -1,10 +1,13 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3000';
+// services/api.js or wherever you make fetch calls
+const BASE_URL = "https://your-azure-backend-url.azurewebsites.net";
+
+//const API_URL = 'http://localhost:3000';
 
 export const getEvents = async () => {
   try {
-    const response = await axios.get(`${API_URL}/events`);
+    const response = await axios.get(`${BASE_URL}/events`);
     return response.data;
   } catch (error) {
     console.error('Error fetching events:', error);
@@ -14,7 +17,7 @@ export const getEvents = async () => {
 
 export const createEvent = async (eventData) => {
   try {
-    const response = await axios.post(`${API_URL}/events`, eventData);
+    const response = await axios.post(`${BASE_URL}/events`, eventData);
     return response.data;
   } catch (error) {
     console.error('Error creating event:', error);

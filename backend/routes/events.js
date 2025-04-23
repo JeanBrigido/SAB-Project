@@ -15,4 +15,30 @@ app.get('/events', async (req, res) => {
       res.status(500).json({ error: err.message });
     }
   });
-  
+
+  app.post('/events', async (req, res) => {
+    try {
+      const { event_name, description, event_date, event_time, location } = req.body;
+      
+      // Validate required fields
+      if (!event_name || !description || !event_date || !event_time || !location) {
+        return res.status(400).json({ error: 'All fields are required' });
+      }
+
+      console.log('Received event data:', req.body); // Add this line
+
+      const { data, error } = await supabase
+        .from('events')
+        .insert([{ event_name, description, event_date, event_time, location }]);
+
+      if (error) {
+        console.error('Supabase error:', error); // Add this line
+        return res.status(500).json({ error: error.message });
+      }
+
+      res.status(201).json(data);
+    } catch (err) {
+      console.error('Server error:', err); // Add this line
+      res.status(500).json({ error: err.message });
+    }
+  });
