@@ -96,6 +96,18 @@ const Events = () => {
     }
   };
 
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this event?')) {
+      try {
+        await axios.delete(`${BASE_URL}/${id}`);
+        fetchEvents(); // Refresh the events list
+      } catch (err) {
+        console.error('Error deleting event:', err);
+        setError(err.message);
+      }
+    }
+  };
+
   const handleChange = (e) => {
     setNewEvent({
       ...newEvent,
@@ -232,7 +244,7 @@ const Events = () => {
                   <label>Time:</label>
                   <input
                     type="time"
-                    value={editingEvent.event_time}
+                    value={editingEvent.event_time?.substring(0, 5)}
                     onChange={(e) => setEditingEvent({
                       ...editingEvent,
                       event_time: e.target.value
@@ -285,6 +297,12 @@ const Events = () => {
                     onClick={() => setEditingEvent(event)}
                   >
                     Edit
+                  </button>
+                  <button 
+                    className="delete-btn"
+                    onClick={() => handleDelete(event.id)}
+                  >
+                    Delete
                   </button>
                   <button className="add-calendar-btn">
                     Sign Up

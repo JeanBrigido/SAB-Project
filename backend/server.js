@@ -75,6 +75,33 @@ app.put('/events/:id', async (req, res) => {
   }
 });
 
+app.delete('/events/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log('Attempting to delete event with ID:', id); // Debug log
+
+    const { data, error } = await supabase
+      .from('events')
+      .delete()
+      .eq('id', id)
+      .select();
+
+    if (error) {
+      console.error('Supabase delete error:', error);
+      return res.status(500).json({ error: error.message });
+    }
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+
+    res.status(200).json({ message: 'Event deleted successfully', data });
+  } catch (err) {
+    console.error('Delete route error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Move app.listen to the end
 app.listen(PORT, async () => {
   console.log(`✅ Server running on port ${PORT}`);
