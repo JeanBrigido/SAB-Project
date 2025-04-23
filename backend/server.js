@@ -2,7 +2,7 @@
 import dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
-import supabase from './supabase.js';
+import eventRoutes from './routes/events.js';
 
 dotenv.config();
 const app = express();
@@ -13,106 +13,9 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.get('/events', async (req, res) => {
-  try {
-    const { data, error } = await supabase.from('events').select('*');
-    if (error) {
-      console.error('Supabase query error:', error);
-      throw error;
-    }
-    res.json(data);
-  } catch (err) {
-    console.error('Route error:', err);
-    res.status(500).json({ error: err.message });
-  }
-});
+app.use('/events', eventRoutes);
 
-app.post('/events', async (req, res) => {
-  try {
-    const { event_name, event_date, location, description, event_time } = req.body;
-    
-    // Add validation
-    if (!event_name || !event_date || !location || !description || !event_time) {
-      return res.status(400).json({ error: 'All fields are required' });
-    }
-
-    const { data, error } = await supabase
-      .from('events')
-      .insert([{ event_name, event_date, location, description, event_time }])
-      .select(); // Add .select() to return the inserted data
-
-    if (error) {
-      console.error('Supabase insert error:', error);
-      throw error;
-    }
-    res.status(201).json(data[0]);
-  } catch (err) {
-    console.error('Route error:', err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-app.put('/events/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { event_name, event_date, location, description, event_time } = req.body;
-
-    const { data, error } = await supabase
-      .from('events')
-      .update({ event_name, event_date, location, description, event_time })
-      .eq('id', id)
-      .select();
-
-    if (error) throw error;
-
-    if (data.length === 0) {
-      return res.status(404).json({ error: 'Event not found' });
-    }
-
-    res.json(data[0]);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-app.delete('/events/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    console.log('Attempting to delete event with ID:', id); // Debug log
-
-    const { data, error } = await supabase
-      .from('events')
-      .delete()
-      .eq('id', id)
-      .select();
-
-    if (error) {
-      console.error('Supabase delete error:', error);
-      return res.status(500).json({ error: error.message });
-    }
-
-    if (!data || data.length === 0) {
-      return res.status(404).json({ error: 'Event not found' });
-    }
-
-    res.status(200).json({ message: 'Event deleted successfully', data });
-  } catch (err) {
-    console.error('Delete route error:', err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Move app.listen to the end
-app.listen(PORT, async () => {
+// Server startup
+app.listen(PORT, () => {
   console.log(`✅ Server running on port ${PORT}`);
-  try {
-    const { data, error } = await supabase.from('events').select('*').limit(1);
-    if (error) {
-      console.error('❌ Supabase connection error:', error.message);
-    } else {
-      console.log('✅ Supabase connected successfully');
-    }
-  } catch (err) {
-    console.error('❌ Unexpected error testing Supabase:', err.message);
-  }
 });
