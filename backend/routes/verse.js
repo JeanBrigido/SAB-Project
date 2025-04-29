@@ -7,38 +7,30 @@ dotenv.config();
 const router = express.Router();
 
 // Azure OpenAI Configuration
-const endpoint = process.env.AZURE_AI_ENDPOINT;
-const apiKey = process.env.AZURE_AI_KEY;
-const deployment = "gpt-35-turbo"; // Changed to match Azure deployment name
-const apiVersion = "2024-12-01-preview";
+const endpoint = "https://jeanj-ma27s5e4-swedencentral.openai.azure.com/openai/deployments/gpt-4-32k/chat/completions?api-version=2025-01-01-preview";
+const apiKey = process.env.NEW_AZURE_AI_KEY;
+const apiVersion = "2025-01-01-preview";
+const deployment = "gpt-4-32k"; // Deployment name from Azure Portal
+
+// Validate configuration
+if (!endpoint || !apiKey) {
+  throw new Error('Missing required Azure OpenAI configuration');
+}
 
 // Add debugging
 console.log('Azure OpenAI Configuration:', {
   endpoint: endpoint?.substring(0, 10) + '...',
-  deploymentName: deployment,
   hasKey: !!apiKey,
-  apiVersion,
+  deployment,
   environment: process.env.NODE_ENV
 });
 
 // Initialize Azure OpenAI client
-const client = new AzureOpenAI({
-  endpoint,
-  apiKey,
-  deployment,
-  apiVersion
-});
-
-// Simple test route to verify configuration
-router.get('/test', (req, res) => {
-  res.json({ 
-    status: 'ok',
-    config: {
-      hasEndpoint: !!endpoint,
-      hasApiKey: !!apiKey,
-      hasDeployment: !!deployment
-    }
-  });
+const client = new AzureOpenAI({ 
+  endpoint, 
+  apiKey, 
+  apiVersion, 
+  deployment 
 });
 
 // GET /api/verse/daily
@@ -46,42 +38,27 @@ router.get('/daily', async (req, res) => {
   try {
     console.log('Using deployment:', deployment);
     
-    // Updated messages following Azure OpenAI chat completion best practices
-    const messages = [
-      {
-        role: "system",
-        content: "You are an AI assistant specialized in providing Bible verses. When asked for a verse, respond with exactly two lines: the verse text on the first line, followed by its biblical reference on the second line. Keep responses concise and accurate."
-      },
-      {
-        role: "user",
-        content: "Give me a Bible verse for today."
-      },
-      {
-        role: "assistant",
-        content: "Trust in the Lord with all your heart and lean not on your own understanding.\nProverbs 3:5"
-      },
-      {
-        role: "user",
-        content: "Give me another verse that offers wisdom or encouragement for today."
-      }
-    ];
-
-    const response = await client.chat.completions.create({
-      model: deployment,           // Added model parameter
-      messages: messages,
-      max_tokens: 150,            // Reduced for more concise responses
-      temperature: 0.3,           // Reduced for more consistent outputs
+    const result = await client.chat.completions.create({
+      messages: [
+        {
+          role: "system",
+          content: "You are an AI assistant specialized in providing Bible verses. When asked for a verse, respond with exactly two lines: the verse text on the first line, followed by its biblical reference on the second line. Keep responses concise and accurate."
+        },
+        {
+          role: "user",
+          content: "Give me an inspiring Bible verse for today."
+        }
+      ],
+      max_tokens: 800,
+      temperature: 0.7,
       top_p: 0.95,
-      frequency_penalty: 0.0,
-      presence_penalty: 0.0
+      frequency_penalty: 0,
+      presence_penalty: 0,
+      stop: null
     });
 
-    if (!response?.choices?.[0]?.message?.content) {
-      throw new Error('No verse content received from Azure OpenAI');
-    }
-
-    const content = response.choices[0].message.content.trim();
-    console.log('Raw response:', content); // Debug log
+    const content = result.choices[0].message.content.trim();
+    console.log('Raw response:', content);
 
     const [text, reference] = content.split('\n').map(s => s.trim());
     
