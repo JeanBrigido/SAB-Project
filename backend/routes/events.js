@@ -24,22 +24,36 @@ router.post('/', verifyToken, async (req, res) => {
   try {
     const { event_name, event_date, location, description, event_time } = req.body;
     
+    // Validate required fields
     if (!event_name || !event_date || !location || !description || !event_time) {
-      return res.status(400).json({ error: 'All fields are required' });
+      return res.status(400).json({ 
+        error: 'Missing required fields',
+        required: ['event_name', 'event_date', 'location', 'description', 'event_time']
+      });
     }
 
+    // Insert event into Supabase
     const { data, error } = await supabase
       .from('events')
-      .insert([{ event_name, event_date, location, description, event_time }])
-      .select();
+      .insert([{ 
+        event_name, 
+        event_date, 
+        location, 
+        description, 
+        event_time
+      }])
+      .select()
+      .single();
 
     if (error) {
       console.error('Supabase insert error:', error);
       throw error;
     }
-    res.status(201).json(data[0]);
+
+    console.log('Event created:', data);
+    res.status(201).json(data);
   } catch (err) {
-    console.error('Route error:', err);
+    console.error('Event creation error:', err);
     res.status(500).json({ error: err.message });
   }
 });

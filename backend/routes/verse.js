@@ -1,10 +1,14 @@
 import express from 'express';
 import { AzureOpenAI } from "openai";
 import dotenv from 'dotenv';
+import cors from 'cors';
 
 dotenv.config();
 
 const router = express.Router();
+
+// Enable CORS for all routes
+router.use(cors());
 
 // Azure OpenAI Configuration
 const endpoint = "https://jeanj-ma27s5e4-swedencentral.openai.azure.com/openai/deployments/gpt-4-32k/chat/completions?api-version=2025-01-01-preview";
