@@ -1,5 +1,6 @@
 import express from 'express';
 import { verifyToken } from '../middleware/auth.js';
+import supabase from '../supabase.js';
 
 const router = express.Router();
 

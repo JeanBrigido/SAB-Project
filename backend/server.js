@@ -11,8 +11,18 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-// Simple CORS configuration
-app.use(cors());
+// CORS configuration with Azure best practices
+const corsOptions = {
+  origin: [
+    process.env.FRONTEND_URL || 'http://localhost:5173',
+    'https://sab-project-8pv7.vercel.app'
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Accept', 'Authorization'],
+  credentials: true
+};
+
+app.use(cors(corsOptions));
 
 // Middleware
 app.use(express.json());
@@ -21,34 +31,28 @@ app.use((req, res, next) => {
   next();
 });
 
+// Environment check
+console.log('✅ Environment:', process.env.NODE_ENV);
+console.log('✅ Azure OpenAI Endpoint configured:', !!process.env.AZURE_AI_ENDPOINT);
+
 // Routes
 app.use('/auth', authRoutes);
 app.use('/events', eventRoutes);
 app.use('/small-groups', smallGroupRoutes);
 app.use('/contact-us', contactRoutes);
-app.use('/api', verseRoutes);
+app.use('/api/verse', verseRoutes);  // Changed to explicit path
 
-// Error handling middleware
+// Error handling middleware - must be after routes
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  console.error('Error:', err.stack);
   res.status(500).json({
     error: 'Something went wrong!',
     details: process.env.NODE_ENV === 'development' ? err.message : undefined
   });
 });
 
-// Health check with more details
-app.get('/health', (req, res) => {
-  res.status(200).json({
-    status: 'healthy',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    environment: process.env.NODE_ENV
-  });
-});
-
-// Catch-all route for undefined paths
-app.use('*', (req, res) => {
+// 404 handler - must be after routes and error handler
+app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
