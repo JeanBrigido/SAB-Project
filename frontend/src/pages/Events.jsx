@@ -60,6 +60,22 @@ const Events = () => {
     }
   };
 
+  const handleDelete = async (eventId) => {
+    if (!window.confirm('Are you sure you want to delete this event?')) {
+      return;
+    }
+
+    try {
+      const token = await state.getAccessToken();
+      await deleteEvent(eventId, token);
+      const updatedEvents = events.filter(event => event.id !== eventId);
+      setEvents(updatedEvents);
+    } catch (error) {
+      setError(error.message);
+      console.error('Delete error:', error);
+    }
+  };
+
   return (
     <div className="events-container">
       {state.isAuthenticated && (
@@ -85,10 +101,31 @@ const Events = () => {
         {events.map(event => (
           <div key={event.id} className="event-card">
             <h3>{event.event_name}</h3>
-            <p>{event.description}</p>
-            <p>Date: {event.event_date}</p>
-            <p>Time: {event.event_time}</p>
-            <p>Location: {event.location}</p>
+            <p className="event-description">{event.description}</p>
+            <div className="event-details">
+              <p><span className="detail-label">Date:</span> {event.event_date}</p>
+              <p><span className="detail-label">Time:</span> {event.event_time}</p>
+              <p><span className="detail-label">Location:</span> {event.location}</p>
+            </div>
+            {state.isAuthenticated && (
+              <div className="event-actions">
+                <button 
+                  className="edit-button"
+                  onClick={() => {
+                    setEditingEvent(event);
+                    setShowForm(true);
+                  }}
+                >
+                  <i className="fas fa-edit"></i> Edit
+                </button>
+                <button 
+                  className="delete-button"
+                  onClick={() => handleDelete(event.id)}
+                >
+                  <i className="fas fa-trash-alt"></i> Delete
+                </button>
+              </div>
+            )}
           </div>
         ))}
       </div>

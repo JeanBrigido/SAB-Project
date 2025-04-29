@@ -52,3 +52,16 @@ export const updateEvent = async (eventId, eventData, token) => {
     throw error;
   }
 };
+
+export const deleteEvent = async (eventId, token) => {
+  try {
+    await axios.delete(`${BASE_URL}/${eventId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+  } catch (error) {
+    console.error('Error deleting event:', error);
+    throw new Error('Failed to delete event');
+  }
+};
