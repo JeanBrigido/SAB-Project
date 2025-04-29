@@ -56,8 +56,9 @@ const Events = () => {
       setEvents(updatedEvents);
       setEditingEvent(null);
       setShowForm(false);
-    } catch (error) {
-      setError(error.message);
+    } catch (err) {
+      console.error('Update error:', err);
+      setError(err.message || 'Failed to update event');
     } finally {
       setLoading(false);
     }

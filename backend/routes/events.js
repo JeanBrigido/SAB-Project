@@ -70,6 +70,24 @@ router.put('/:id', verifyToken, async (req, res) => {
     const { id } = req.params;
     const { event_name, event_date, location, description, event_time } = req.body;
 
+    // Validate required fields
+    if (!event_name || !event_date || !location || !description || !event_time) {
+      return res.status(400).json({ 
+        error: 'Missing required fields',
+        required: ['event_name', 'event_date', 'location', 'description', 'event_time']
+      });
+    }
+
+    // Add logging to debug the update
+    console.log('Updating event:', {
+      id,
+      event_name,
+      event_date,
+      location,
+      description,
+      event_time
+    });
+
     const { data, error } = await supabase
       .from('events')
       .update({ 
@@ -85,13 +103,20 @@ router.put('/:id', verifyToken, async (req, res) => {
 
     if (error) {
       console.error('Supabase update error:', error);
-      throw error;
+      return res.status(400).json({ error: error.message });
     }
 
-    res.json(data);
+    if (!data) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+
+    return res.json(data);
   } catch (err) {
     console.error('Route error:', err);
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ 
+      error: 'Failed to update event',
+      details: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
   }
 });
 
