@@ -7,15 +7,22 @@ const router = express.Router();
 // Public routes - no auth needed
 router.get('/', async (req, res) => {
   try {
+    console.log('GET /events - Fetching all events');
     const { data, error } = await supabase.from('events').select('*');
+    
     if (error) {
       console.error('Supabase query error:', error);
       throw error;
     }
-    res.json(data);
+    
+    console.log(`Found ${data?.length || 0} events`);
+    return res.json(data);
   } catch (err) {
     console.error('Route error:', err);
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ 
+      error: 'Failed to fetch events',
+      details: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
   }
 });
 

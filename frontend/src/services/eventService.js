@@ -6,10 +6,16 @@ const BASE_URL = "https://sab-cbaudvgcfab6g4gh.centralus-01.azurewebsites.net/ev
 // Export functions directly
 export const fetchEvents = async () => {
   try {
+    console.log('Fetching events from:', BASE_URL);  // Debug log
     const response = await axios.get(BASE_URL);
+    console.log('Events fetched:', response.data);  // Debug log
     return response.data;
   } catch (error) {
-    console.error('Error fetching events:', error);
+    console.error('Error fetching events:', {
+      status: error.response?.status,
+      message: error.message,
+      data: error.response?.data
+    });
     throw error;
   }
 };
