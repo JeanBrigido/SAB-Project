@@ -3,7 +3,7 @@ import { useAuthContext } from '@asgardeo/auth-react';
 import { createEvent } from '../services/eventService';
 import '../styles/EventForm.css';
 
-const EventForm = ({ onSuccess, onError, editingEvent = null }) => {
+const EventForm = ({ onSuccess, onError, editingEvent = null, onCancel }) => {
   const [error, setError] = useState(null);
   const { state, getAccessToken } = useAuthContext();
 
@@ -62,7 +62,6 @@ const EventForm = ({ onSuccess, onError, editingEvent = null }) => {
 
   return (
     <div className="event-form-container">
-      <h2>{editingEvent ? 'Edit Event' : 'Create New Event'}</h2>
       {error && <div className="error-message">{error}</div>}
       <form onSubmit={handleSubmit}>
         <div className="form-group">
@@ -126,12 +125,12 @@ const EventForm = ({ onSuccess, onError, editingEvent = null }) => {
 
         <div className="form-actions">
           <button type="submit" className="submit-button">
-          {editingEvent ? 'Save Changes' : 'Create Event'}
+            {editingEvent ? 'Save Changes' : 'Create Event'}
           </button>
           <button 
             type="button" 
             className="cancel-button"
-            onClick={() => onSuccess?.()}
+            onClick={onCancel}
           >
             Cancel
           </button>

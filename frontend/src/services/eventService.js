@@ -31,6 +31,7 @@ export const createEvent = async (eventData, token) => {
 
 export const updateEvent = async (eventId, eventData, token) => {
   try {
+    console.log('Updating event:', { id: eventId, ...eventData });
     const response = await axios.put(`${BASE_URL}/${eventId}`, eventData, {
       headers: {
         'Content-Type': 'application/json',
@@ -39,7 +40,11 @@ export const updateEvent = async (eventId, eventData, token) => {
     });
     return response.data;
   } catch (error) {
-    console.error('Error updating event:', error);
+    console.error('Error updating event:', {
+      status: error.response?.status,
+      message: error.message,
+      data: error.response?.data
+    });
     throw error;
   }
 };

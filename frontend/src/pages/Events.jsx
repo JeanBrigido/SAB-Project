@@ -85,6 +85,12 @@ const Events = () => {
     }
   };
 
+  const handleCancel = () => {
+    setShowForm(false);
+    setEditingEvent(null);
+    setError(null);
+  };
+
   return (
     <div className="events-container">
       {state.isAuthenticated && (
@@ -98,9 +104,10 @@ const Events = () => {
 
       {showForm && (
         <EventForm 
-        onSuccess={editingEvent ? handleEventUpdate : handleEventCreation}
-        onError={handleEventError}
-        editingEvent={editingEvent}
+          onSuccess={editingEvent ? handleEventUpdate : handleEventCreation}
+          onError={handleEventError}
+          editingEvent={editingEvent}
+          onCancel={handleCancel}
         />
       )}
 
