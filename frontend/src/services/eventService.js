@@ -28,3 +28,21 @@ export const createEvent = async (eventData, token) => {
     throw error;
   }
 };
+
+export const updateEvent = async (eventId, eventData, token) => {
+  try {
+    const response = await axios.put(`${BASE_URL}/${eventId}`, eventData, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    return response.data;
+  } catch (error) {
+    if (error.response?.status === 404) {
+      throw new Error('Event not found');
+    }
+    console.error('Error updating event:', error);
+    throw error;
+  }
+};

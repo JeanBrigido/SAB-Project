@@ -65,18 +65,25 @@ router.put('/:id', verifyToken, async (req, res) => {
 
     const { data, error } = await supabase
       .from('events')
-      .update({ event_name, event_date, location, description, event_time })
+      .update({ 
+        event_name, 
+        event_date, 
+        location, 
+        description, 
+        event_time 
+      })
       .eq('id', id)
-      .select();
+      .select()
+      .single();
 
-    if (error) throw error;
-
-    if (data.length === 0) {
-      return res.status(404).json({ error: 'Event not found' });
+    if (error) {
+      console.error('Supabase update error:', error);
+      throw error;
     }
 
-    res.json(data[0]);
+    res.json(data);
   } catch (err) {
+    console.error('Route error:', err);
     res.status(500).json({ error: err.message });
   }
 });

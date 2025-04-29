@@ -1,14 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { useAuthContext } from "@asgardeo/auth-react";
+import React, { useState, useEffect } from 'react';
+import { useAuthContext } from '@asgardeo/auth-react';
+import { fetchEvents, createEvent, updateEvent } from '../services/eventService';
 import '../styles/Events.css';
-import { fetchEvents } from '../services/eventService';
-import EventForm from '../components/EventForm';
 
 const Events = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showForm, setShowForm] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
   const { state } = useAuthContext();
 
@@ -35,7 +33,6 @@ const Events = () => {
 
   const handleEventCreation = () => {
     fetchEvents(); // Refresh events list
-    setShowForm(false);
   };
 
   const handleEventError = (errorMessage) => {
@@ -45,11 +42,13 @@ const Events = () => {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      // Implementation coming in next feature
-      console.log('Update event:', editingEvent);
+      const token = await state.getAccessToken();
+      await updateEvent(editingEvent.id, editingEvent, token);
+      await fetchEvents(); // Refresh the list
       setEditingEvent(null);
     } catch (error) {
       setError(error.message);
+      console.error('Update error:', error);
     }
   };
 
