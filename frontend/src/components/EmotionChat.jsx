@@ -17,7 +17,7 @@ const EmotionChat = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(`${API_URL}/api/verse-by-emotion?emotion=${emotion}`, {
+      const response = await fetch(`${API_URL}/api/verse/verse-by-emotion?emotion=${emotion}`, {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',

@@ -14,7 +14,7 @@ const VerseOfTheDay = () => {
   const fetchVerse = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_URL}/api/verse-of-the-day`, {
+      const response = await fetch(`${API_URL}/api/verse/daily`, {  // Updated endpoint
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
