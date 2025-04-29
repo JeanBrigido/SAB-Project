@@ -13,7 +13,7 @@ const Login = () => {
           onClick={() => signIn()} 
           className="submit-btn"
         >
-          Sign in with Asgardeo
+          Sign in
         </button>
       </div>
     </div>
