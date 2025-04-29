@@ -1,28 +1,30 @@
-import { useAuthContext } from '@asgardeo/auth-react';
 import axios from 'axios';
+import { useAuthContext } from '@asgardeo/auth-react';
 
 const BASE_URL = "https://sab-cbaudvgcfab6g4gh.centralus-01.azurewebsites.net/events";
 
-export const createEvent = async (eventData) => {
+// Export functions directly
+export const fetchEvents = async () => {
   try {
-    const { getAccessToken } = useAuthContext();
-    const token = await getAccessToken();
+    const response = await axios.get(BASE_URL);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching events:', error);
+    throw error;
+  }
+};
 
-    if (!token) {
-      throw new Error('User not authenticated');
-    }
-
+export const createEvent = async (eventData, token) => {
+  try {
     const response = await axios.post(BASE_URL, eventData, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       }
     });
-    
     return response.data;
   } catch (error) {
-    const errorMessage = error.response?.data?.error || error.message;
-    console.error('Error creating event:', errorMessage);
-    throw new Error(errorMessage);
+    console.error('Error creating event:', error);
+    throw error;
   }
 };

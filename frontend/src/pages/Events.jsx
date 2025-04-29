@@ -18,7 +18,19 @@ const Events = () => {
   };
 
   useEffect(() => {
-    fetchEvents();
+    const loadEvents = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchEvents();
+        setEvents(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadEvents();
   }, []);
 
   const handleEventCreation = () => {
@@ -28,6 +40,26 @@ const Events = () => {
 
   const handleEventError = (errorMessage) => {
     setError(errorMessage);
+  };
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      // Implementation coming in next feature
+      console.log('Update event:', editingEvent);
+      setEditingEvent(null);
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
+  const handleDelete = async (eventId) => {
+    try {
+      // Implementation coming in next feature
+      console.log('Delete event:', eventId);
+    } catch (error) {
+      setError(error.message);
+    }
   };
 
   if (loading) return <div className="loading">Loading...</div>;
