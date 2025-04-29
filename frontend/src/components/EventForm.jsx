@@ -46,15 +46,24 @@ const EventForm = ({ onSuccess, onError, editingEvent = null, onCancel }) => {
         location: newEvent.location.trim()
       };
 
+      console.log('Submitting event data:', {
+        id: editingEvent?.id,
+        data: trimmedEvent,
+        isEdit: !!editingEvent
+      });
+
       if (editingEvent) {
         await updateEvent(editingEvent.id, trimmedEvent, token);
+        console.log('Update successful');
       } else {
         await createEvent(trimmedEvent, token);
+        console.log('Creation successful');
       }
 
       onSuccess?.();
     } catch (err) {
       const errorMessage = err.response?.data?.error || err.message;
+      console.error('Form submission error:', errorMessage);
       setError(errorMessage);
       onError?.(errorMessage);
     }

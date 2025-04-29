@@ -31,19 +31,35 @@ export const createEvent = async (eventData, token) => {
 
 export const updateEvent = async (eventId, eventData, token) => {
   try {
-    console.log('Updating event:', { id: eventId, ...eventData });
-    const response = await axios.put(`${BASE_URL}/${eventId}`, eventData, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
+    console.log('Making update request:', {
+      url: `${BASE_URL}/${eventId}`,
+      data: eventData,
+      token: token ? 'Present' : 'Missing'
     });
+
+    const response = await axios.put(`${BASE_URL}/${eventId}`, 
+      {
+        event_name: eventData.event_name,
+        description: eventData.description,
+        event_date: eventData.event_date,
+        event_time: eventData.event_time,
+        location: eventData.location
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    );
+
+    console.log('Update response:', response.data);
     return response.data;
   } catch (error) {
-    console.error('Error updating event:', {
+    console.error('Update error details:', {
       status: error.response?.status,
-      message: error.message,
-      data: error.response?.data
+      data: error.response?.data,
+      message: error.message
     });
     throw error;
   }
