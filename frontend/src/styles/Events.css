@@ -1,37 +1,65 @@
-.events-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem 1rem;
-  }
-  
-  .events-title {
-    font-size: 2.5rem;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 1rem;
-  }
-  
-  .events-subtitle {
-    font-size: 1.1rem;
-    color: #666;
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-  
-  .events-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 1.5rem;
-    padding: 0.5rem;
-  }
-  
-  .event-card {
-  background: white;
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.page-header h1 {
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.page-header .subtitle {
+  font-size: 1.25rem;
+  color: #666;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.primary-button {
+  background-color: #8b5cf6;
+  color: white;
+  padding: 0.75rem 2rem;
+  border: none;
   border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  min-width: 200px;
+  text-align: center;
+}
+
+.primary-button:hover {
+  background-color: #7c3aed;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(139, 92, 246, 0.2);
+}
+
+.primary-button:active {
+  transform: translateY(0);
+}
+
+/* Update existing event card styles */
+.event-card {
+  background: white;
+  border-radius: 12px;
   padding: 1.5rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease;
-  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .event-card:hover {
@@ -39,31 +67,18 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.event-card h3 {
-  color: #2c3e50;
-  margin-bottom: 1rem;
-  font-size: 1.25rem;
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
 }
 
-.event-description {
-  color: #666;
-  margin-bottom: 1rem;
-  line-height: 1.5;
-}
-
-.event-details {
-  margin: 1rem 0;
-}
-
-.detail-label {
-  font-weight: 600;
-  color: #2c3e50;
-}
-
+/* Update action buttons */
 .event-actions {
   display: flex;
-  gap: 0.5rem;
-  margin-top: 1rem;
+  gap: 1rem;
+  margin-top: 1.5rem;
   padding-top: 1rem;
   border-top: 1px solid #eee;
 }
@@ -72,51 +87,31 @@
 .delete-button {
   padding: 0.5rem 1rem;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   font-weight: 500;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
+  flex: 1;
+  justify-content: center;
 }
 
 .edit-button {
-  background-color: #3498db;
+  background-color: #8b5cf6;
   color: white;
 }
 
 .edit-button:hover {
-  background-color: #2980b9;
+  background-color: #7c3aed;
 }
 
 .delete-button {
-  background-color: #e74c3c;
+  background-color: #ef4444;
   color: white;
 }
 
 .delete-button:hover {
-  background-color: #c0392b;
-}
-
-.event-actions i {
-  font-size: 0.875rem;
-}
-
-.loading-message,
-.error-message {
-  text-align: center;
-  padding: 1rem;
-  border-radius: 4px;
-  margin: 1rem 0;
-}
-
-.loading-message {
-  background-color: #f8f9fa;
-  color: #666;
-}
-
-.error-message {
-  background-color: #fee2e2;
-  color: #dc2626;
+  background-color: #dc2626;
 }

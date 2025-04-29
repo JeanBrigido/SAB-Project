@@ -91,59 +91,68 @@ const Events = () => {
   };
 
   return (
-    <div className="events-container">
-      {state.isAuthenticated && (
-        <button 
-          className="add-event-button"
-          onClick={() => setShowForm(true)}
-        >
-          Add Event
-        </button>
-      )}
+    <div className="page-container">
+      <div className="page-header">
+        <h1>Upcoming Events</h1>
+        <p className="subtitle">Join us for these upcoming events and activities at Grace Church.</p>
+      </div>
 
-      {showForm && (
-        <EventForm 
-          onSuccess={editingEvent ? handleEventUpdate : handleEventCreation}
-          onError={handleEventError}
-          editingEvent={editingEvent}
-          onCancel={handleCancel}
-        />
-      )}
+      <div className="events-container">
+        <div className="button-container">
+          {state.isAuthenticated && (
+            <button 
+              className="primary-button"
+              onClick={() => setShowForm(true)}
+            >
+              Add New Event
+            </button>
+          )}
+        </div>
 
-      {loading && <p>Loading events...</p>}
-      {error && <p className="error-message">{error}</p>}
-      
-      <div className="events-grid">
-        {events.map(event => (
-          <div key={event.id} className="event-card">
-            <h3>{event.event_name}</h3>
-            <p className="event-description">{event.description}</p>
-            <div className="event-details">
-              <p><span className="detail-label">Date:</span> {event.event_date}</p>
-              <p><span className="detail-label">Time:</span> {event.event_time}</p>
-              <p><span className="detail-label">Location:</span> {event.location}</p>
-            </div>
-            {state.isAuthenticated && (
-              <div className="event-actions">
-                <button 
-                  className="edit-button"
-                  onClick={() => {
-                    setEditingEvent(event);
-                    setShowForm(true);
-                  }}
-                >
-                  <i className="fas fa-edit"></i> Edit
-                </button>
-                <button 
-                  className="delete-button"
-                  onClick={() => handleDelete(event.id)}
-                >
-                  <i className="fas fa-trash-alt"></i> Delete
-                </button>
+        {showForm && (
+          <EventForm 
+            onSuccess={editingEvent ? handleEventUpdate : handleEventCreation}
+            onError={handleEventError}
+            editingEvent={editingEvent}
+            onCancel={handleCancel}
+          />
+        )}
+
+        {loading && <p>Loading events...</p>}
+        {error && <p className="error-message">{error}</p>}
+        
+        <div className="events-grid">
+          {events.map(event => (
+            <div key={event.id} className="event-card">
+              <h3>{event.event_name}</h3>
+              <p className="event-description">{event.description}</p>
+              <div className="event-details">
+                <p><span className="detail-label">Date:</span> {event.event_date}</p>
+                <p><span className="detail-label">Time:</span> {event.event_time}</p>
+                <p><span className="detail-label">Location:</span> {event.location}</p>
               </div>
-            )}
-          </div>
-        ))}
+              {state.isAuthenticated && (
+                <div className="event-actions">
+                  <button 
+                    className="edit-button"
+                    onClick={() => {
+                      setEditingEvent(event);
+                      setShowForm(true);
+                    }}
+                  >
+                    <i className="fas fa-edit"></i> Edit
+                  </button>
+                  <button 
+                    className="delete-button"
+                    onClick={() => handleDelete(event.id)}
+                  >
+                    <i className="fas fa-trash-alt"></i> Delete
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

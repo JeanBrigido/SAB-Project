@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuthContext } from "@asgardeo/auth-react";
 import '../styles/SmallGroups.css';
+import '../styles/Events.css'; // Reuse the shared styles
 import { FaCalendar, FaClock, FaMapMarkerAlt, FaChevronLeft, FaUserPlus } from 'react-icons/fa';
 
 const BASE_URL = "https://sab-cbaudvgcfab6g4gh.centralus-01.azurewebsites.net/small-groups";
@@ -100,19 +101,24 @@ const SmallGroups = () => {
   if (error) return <div className="error">Error: {error}</div>;
 
   return (
-    <div className="small-groups-container">
-      <h1 className="groups-title">Small Groups</h1>
-      <p className="groups-subtitle">Join a group to connect and grow in faith together.</p>
+    <div className="page-container">
+      <div className="page-header">
+        <h1>Small Groups</h1>
+        <p className="subtitle">Join a group to connect and grow in faith together.</p>
+      </div>
 
       {/* Only show Add Group button for authenticated users */}
-      {state.isAuthenticated && (
-        <button 
-          className="add-group-btn"
-          onClick={() => setShowForm(!showForm)}
+      <div className="small-groups-container">
+        <div className="button-container">
+          {state.isAuthenticated && (
+            <button 
+            className="primary-button"
+            onClick={() => setShowForm(!showForm)}
         >
           {showForm ? 'Cancel' : 'Add New Group'}
         </button>
       )}
+      </div>
 
       {showForm && (
         <div className="add-group-form">
@@ -306,6 +312,7 @@ const SmallGroups = () => {
           ))}
         </div>
       )}
+    </div>
     </div>
   );
 };
