@@ -1,13 +1,14 @@
-import React from 'react'
-import Hero from '../components/Hero'
+import React from 'react';
+import Hero from '../components/Hero';
+import VerseOfTheDay from '../components/VerseOfTheDay';
 
 const Home = () => {
   return (
-    
     <div>
-        <Hero />
+      <VerseOfTheDay />
+      <Hero />
     </div>
-  )
-}
+  );
+};
 
 export default Home;

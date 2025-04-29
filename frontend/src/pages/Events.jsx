@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useAuthContext } from "@asgardeo/auth-react";
 import '../styles/Events.css';
-// services/api.js or wherever you make fetch calls
+
 const BASE_URL = "https://sab-cbaudvgcfab6g4gh.centralus-01.azurewebsites.net/events";
 
 const Events = () => {
@@ -17,6 +18,12 @@ const Events = () => {
     location: ''
   });
   const [editingEvent, setEditingEvent] = useState(null);
+  const { state } = useAuthContext();
+
+  // Simplify to just check authentication
+  const canModifyEvents = () => {
+    return state.isAuthenticated;
+  };
 
   useEffect(() => {
     fetchEvents();
@@ -36,6 +43,10 @@ const Events = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!state.isAuthenticated) {
+      setError('Please login to create events');
+      return;
+    }
     try {
       // Validate all required fields and ensure they're not just whitespace
       const trimmedEvent = {
@@ -86,6 +97,10 @@ const Events = () => {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
+    if (!state.isAuthenticated) {
+      setError('Please login to update events');
+      return;
+    }
     try {
       await axios.put(`${BASE_URL}/${editingEvent.id}`, editingEvent);
       setEditingEvent(null);
@@ -97,6 +112,10 @@ const Events = () => {
   };
 
   const handleDelete = async (id) => {
+    if (!state.isAuthenticated) {
+      setError('Please login to delete events');
+      return;
+    }
     if (window.confirm('Are you sure you want to delete this event?')) {
       try {
         await axios.delete(`${BASE_URL}/${id}`);
@@ -125,12 +144,15 @@ const Events = () => {
         Join us for these upcoming events and activities at Senda-A-Betel Church.
       </p>
 
-      <button 
-        className="add-event-btn"
-        onClick={() => setShowForm(!showForm)}
-      >
-        {showForm ? 'Cancel' : 'Add New Event'}
-      </button>
+      {/* Show Add Event button for any authenticated user */}
+      {state.isAuthenticated && (
+        <button 
+          className="add-event-btn"
+          onClick={() => setShowForm(!showForm)}
+        >
+          {showForm ? 'Cancel' : 'Add New Event'}
+        </button>
+      )}
 
       {showForm && (
         <div className="add-event-form">
@@ -204,77 +226,80 @@ const Events = () => {
         {events.map((event) => (
           <div key={event.id} className="event-card">
             {editingEvent?.id === event.id ? (
-              <form onSubmit={handleUpdate}>
-                <div className="form-group">
-                  <label>Event Name:</label>
-                  <input
-                    type="text"
-                    value={editingEvent.event_name}
-                    onChange={(e) => setEditingEvent({
-                      ...editingEvent,
-                      event_name: e.target.value
-                    })}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Description:</label>
-                  <textarea
-                    value={editingEvent.description}
-                    onChange={(e) => setEditingEvent({
-                      ...editingEvent,
-                      description: e.target.value
-                    })}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Date:</label>
-                  <input
-                    type="date"
-                    value={editingEvent.event_date}
-                    onChange={(e) => setEditingEvent({
-                      ...editingEvent,
-                      event_date: e.target.value
-                    })}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Time:</label>
-                  <input
-                    type="time"
-                    value={editingEvent.event_time?.substring(0, 5)}
-                    onChange={(e) => setEditingEvent({
-                      ...editingEvent,
-                      event_time: e.target.value
-                    })}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Location:</label>
-                  <input
-                    type="text"
-                    value={editingEvent.location}
-                    onChange={(e) => setEditingEvent({
-                      ...editingEvent,
-                      location: e.target.value
-                    })}
-                    required
-                  />
-                </div>
-                <div className="button-group">
-                  <button type="submit" className="update-btn">Save</button>
-                  <button 
-                    type="button" 
-                    className="cancel-btn"
-                    onClick={() => setEditingEvent(null)}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </form>
+              // Only show edit form for authenticated users
+              state.isAuthenticated ? (
+                <form onSubmit={handleUpdate}>
+                  <div className="form-group">
+                    <label>Event Name:</label>
+                    <input
+                      type="text"
+                      value={editingEvent.event_name}
+                      onChange={(e) => setEditingEvent({
+                        ...editingEvent,
+                        event_name: e.target.value
+                      })}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Description:</label>
+                    <textarea
+                      value={editingEvent.description}
+                      onChange={(e) => setEditingEvent({
+                        ...editingEvent,
+                        description: e.target.value
+                      })}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Date:</label>
+                    <input
+                      type="date"
+                      value={editingEvent.event_date}
+                      onChange={(e) => setEditingEvent({
+                        ...editingEvent,
+                        event_date: e.target.value
+                      })}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Time:</label>
+                    <input
+                      type="time"
+                      value={editingEvent.event_time?.substring(0, 5)}
+                      onChange={(e) => setEditingEvent({
+                        ...editingEvent,
+                        event_time: e.target.value
+                      })}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Location:</label>
+                    <input
+                      type="text"
+                      value={editingEvent.location}
+                      onChange={(e) => setEditingEvent({
+                        ...editingEvent,
+                        location: e.target.value
+                      })}
+                      required
+                    />
+                  </div>
+                  <div className="button-group">
+                    <button type="submit" className="update-btn">Save</button>
+                    <button 
+                      type="button" 
+                      className="cancel-btn"
+                      onClick={() => setEditingEvent(null)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              ) : null
             ) : (
               <>
                 <h2 className="event-title">{event.event_name}</h2>
@@ -292,18 +317,23 @@ const Events = () => {
                   {event.location}
                 </div>
                 <div className="button-group">
-                  <button 
-                    className="edit-btn"
-                    onClick={() => setEditingEvent(event)}
-                  >
-                    Edit
-                  </button>
-                  <button 
-                    className="delete-btn"
-                    onClick={() => handleDelete(event.id)}
-                  >
-                    Delete
-                  </button>
+                  {state.isAuthenticated && (
+                    <>
+                      <button 
+                        className="edit-btn"
+                        onClick={() => setEditingEvent(event)}
+                      >
+                        Edit
+                      </button>
+                      <button 
+                        className="delete-btn"
+                        onClick={() => handleDelete(event.id)}
+                      >
+                        Delete
+                      </button>
+                    </>
+                  )}
+                  {/* Always show sign up button */}
                   <button className="add-calendar-btn">
                     Sign Up
                   </button>

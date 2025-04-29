@@ -1,9 +1,9 @@
 import express from 'express';
-import supabase from '../supabase.js';
+import { verifyToken } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// GET all events
+// Public routes - no auth needed
 router.get('/', async (req, res) => {
   try {
     const { data, error } = await supabase.from('events').select('*');
@@ -18,8 +18,8 @@ router.get('/', async (req, res) => {
   }
 });
 
-// POST new event
-router.post('/', async (req, res) => {
+// Protected routes - need authentication
+router.post('/', verifyToken, async (req, res) => {
   try {
     const { event_name, event_date, location, description, event_time } = req.body;
     
@@ -43,8 +43,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// PUT update event
-router.put('/:id', async (req, res) => {
+router.put('/:id', verifyToken, async (req, res) => {
   try {
     const { id } = req.params;
     const { event_name, event_date, location, description, event_time } = req.body;
@@ -67,8 +66,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// DELETE event
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyToken, async (req, res) => {
   try {
     const { id } = req.params;
     console.log('Attempting to delete event with ID:', id);
