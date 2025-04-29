@@ -30,8 +30,8 @@ router.get('/verse-of-the-day', async (req, res) => {
     }
 
     const messages = [
-      { role: "system", content: "You are a helpful assistant that provides Bible verses." },
-      { role: "user", content: "Give me a short Bible verse of the day. Only return the verse text and the reference." }
+      { role: "system", content: "You are a helpful assistant that provides Bible verses. Return only the verse text and reference, separated by a newline." },
+      { role: "user", content: "Give me a short Bible verse of the day." }
     ];
 
     const response = await client.getChatCompletions(
@@ -39,10 +39,10 @@ router.get('/verse-of-the-day', async (req, res) => {
       messages
     );
 
-    const verse = {
-      text: response.choices[0].message.content.split('\n')[0],
-      reference: response.choices[0].message.content.split('\n')[1]
-    };
+    const content = response.choices[0].message.content.trim();
+    const [text, reference] = content.split('\n').map(str => str.trim());
+
+    const verse = { text, reference };
 
     // Update cache
     dailyVerseCache = {

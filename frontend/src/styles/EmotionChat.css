@@ -1,0 +1,86 @@
+.emotion-chat {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  width: 350px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.emotion-chat:not(.open) {
+  transform: translateY(calc(100% - 48px));
+}
+
+.chat-toggle {
+  width: 100%;
+  padding: 12px;
+  background: #6B46C1;
+  color: white;
+  border: none;
+  border-radius: 8px 8px 0 0;
+  cursor: pointer;
+}
+
+.chat-content {
+  padding: 16px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.emotions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.emotion-btn {
+  padding: 8px;
+  background: #E9D8FD;
+  color: #553C9A;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.emotion-btn:hover {
+  background: #D6BCFA;
+}
+
+.emotion-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.verse-result {
+  margin-top: 16px;
+  padding: 16px;
+  background: #F7FAFC;
+  border-radius: 4px;
+}
+
+.verse-text {
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+
+.verse-reference {
+  font-style: italic;
+  color: #4A5568;
+}
+
+.loading {
+  text-align: center;
+  padding: 16px;
+}
+
+.error {
+  color: #E53E3E;
+  padding: 8px;
+  margin: 8px 0;
+  background: #FED7D7;
+  border-radius: 4px;
+}
