@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuthContext } from '@asgardeo/auth-react';
-import { createEvent } from '../services/eventService';
+import { createEvent, updateEvent } from '../services/eventService';
 import '../styles/EventForm.css';
 
 const EventForm = ({ onSuccess, onError, editingEvent = null, onCancel }) => {
