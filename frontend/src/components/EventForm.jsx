@@ -46,13 +46,20 @@ const EventForm = ({ onSuccess, onError, editingEvent = null, onCancel }) => {
         location: newEvent.location.trim()
       };
 
-      console.log('Submitting event data:', {
-        id: editingEvent?.id,
-        data: trimmedEvent,
-        isEdit: !!editingEvent
-      });
+      // Validate all required fields
+      const requiredFields = ['event_name', 'description', 'event_date', 'event_time', 'location'];
+      const missingFields = requiredFields.filter(field => !trimmedEvent[field]);
+      
+      if (missingFields.length > 0) {
+        setError(`Missing required fields: ${missingFields.join(', ')}`);
+        return;
+      }
 
       if (editingEvent) {
+        console.log('Updating event:', {
+          id: editingEvent.id,
+          data: trimmedEvent
+        });
         await updateEvent(editingEvent.id, trimmedEvent, token);
         console.log('Update successful');
       } else {

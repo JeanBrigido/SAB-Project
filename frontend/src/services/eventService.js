@@ -30,21 +30,29 @@ export const createEvent = async (eventData, token) => {
 };
 
 export const updateEvent = async (eventId, eventData, token) => {
+  if (!eventId || !eventData || !token) {
+    console.error('Missing required parameters:', { eventId, hasData: !!eventData, hasToken: !!token });
+    throw new Error('Missing required parameters for update');
+  }
+
   try {
+    // Validate event data before sending
+    const validatedData = {
+      event_name: eventData.event_name,
+      description: eventData.description,
+      event_date: eventData.event_date,
+      event_time: eventData.event_time,
+      location: eventData.location
+    };
+
     console.log('Making update request:', {
       url: `${BASE_URL}/${eventId}`,
-      data: eventData,
-      token: token ? 'Present' : 'Missing'
+      data: validatedData
     });
 
-    const response = await axios.put(`${BASE_URL}/${eventId}`, 
-      {
-        event_name: eventData.event_name,
-        description: eventData.description,
-        event_date: eventData.event_date,
-        event_time: eventData.event_time,
-        location: eventData.location
-      },
+    const response = await axios.put(
+      `${BASE_URL}/${eventId}`, 
+      validatedData,
       {
         headers: {
           'Content-Type': 'application/json',
