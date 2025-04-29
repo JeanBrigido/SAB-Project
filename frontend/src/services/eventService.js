@@ -1,21 +1,15 @@
 import axios from 'axios';
-import { useAuthContext } from '@asgardeo/auth-react';
 
 const BASE_URL = "https://sab-cbaudvgcfab6g4gh.centralus-01.azurewebsites.net/events";
 
-// Export functions directly
 export const fetchEvents = async () => {
   try {
-    console.log('Fetching events from:', BASE_URL);  // Debug log
+    console.log('Fetching events from:', BASE_URL);
     const response = await axios.get(BASE_URL);
-    console.log('Events fetched:', response.data);  // Debug log
+    console.log('Events fetched:', response.data);
     return response.data;
   } catch (error) {
-    console.error('Error fetching events:', {
-      status: error.response?.status,
-      message: error.message,
-      data: error.response?.data
-    });
+    console.error('Error fetching events:', error);
     throw error;
   }
 };
@@ -45,9 +39,6 @@ export const updateEvent = async (eventId, eventData, token) => {
     });
     return response.data;
   } catch (error) {
-    if (error.response?.status === 404) {
-      throw new Error('Event not found');
-    }
     console.error('Error updating event:', error);
     throw error;
   }
@@ -62,6 +53,6 @@ export const deleteEvent = async (eventId, token) => {
     });
   } catch (error) {
     console.error('Error deleting event:', error);
-    throw new Error('Failed to delete event');
+    throw error;
   }
 };

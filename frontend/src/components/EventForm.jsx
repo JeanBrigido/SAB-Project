@@ -4,6 +4,9 @@ import { createEvent } from '../services/eventService';
 import '../styles/EventForm.css';
 
 const EventForm = ({ onSuccess, onError, editingEvent = null }) => {
+  const [error, setError] = useState(null);
+  const { state, getAccessToken } = useAuthContext();
+
   const [newEvent, setNewEvent] = useState({
     event_name: editingEvent?.event_name || '',
     description: editingEvent?.description || '',
@@ -26,13 +29,15 @@ const EventForm = ({ onSuccess, onError, editingEvent = null }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
+    
     try {
       if (!state.isAuthenticated) {
-        setError('Please log in to create events');
+        setError('Please log in to perform this action');
         return;
       }
 
-      // Validate form data
+      const token = await getAccessToken();
       const trimmedEvent = {
         event_name: newEvent.event_name.trim(),
         description: newEvent.description.trim(),
@@ -48,9 +53,10 @@ const EventForm = ({ onSuccess, onError, editingEvent = null }) => {
       }
 
       onSuccess?.();
-    } catch (error) {
-      setError(error.message);
-      onError?.(error.message);
+    } catch (err) {
+      const errorMessage = err.response?.data?.error || err.message;
+      setError(errorMessage);
+      onError?.(errorMessage);
     }
   };
 

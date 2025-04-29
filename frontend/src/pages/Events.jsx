@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuthContext } from '@asgardeo/auth-react';
-import { fetchEvents, createEvent, updateEvent } from '../services/eventService';
+import { fetchEvents, createEvent, updateEvent, deleteEvent } from '../services/eventService';
 import EventForm from '../components/EventForm';
 import '../styles/Events.css';
 
@@ -69,13 +69,18 @@ const Events = () => {
     }
 
     try {
+      setLoading(true);
       const token = await getAccessToken();
       await deleteEvent(eventId, token);
-      const updatedEvents = events.filter(event => event.id !== eventId);
-      setEvents(updatedEvents);
-    } catch (error) {
-      setError(error.message);
-      console.error('Delete error:', error);
+      
+      // Update local state after successful deletion
+      setEvents(prevEvents => prevEvents.filter(event => event.id !== eventId));
+      setError(null);
+    } catch (err) {
+      setError(err.message || 'Failed to delete event');
+      console.error('Delete error:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
