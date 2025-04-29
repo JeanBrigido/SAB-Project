@@ -38,6 +38,11 @@ app.use('/small-groups', smallGroupRoutes);
 app.use('/contact-us', contactRoutes);
 app.use('/api', verseRoutes);
 
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'healthy' });
+});
+
 // Server startup
 app.listen(PORT, () => {
   console.log(`✅ Server running on port ${PORT}`);
