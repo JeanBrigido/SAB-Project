@@ -62,12 +62,13 @@ const EventForm = ({ onSuccess, onError, editingEvent = null, onCancel }) => {
         });
         await updateEvent(editingEvent.id, trimmedEvent, token);
         console.log('Update successful');
+        // Call onSuccess with no parameters
+        onSuccess?.();
       } else {
         await createEvent(trimmedEvent, token);
-        console.log('Creation successful');
+        // Call onSuccess with the trimmed event data
+        onSuccess?.(trimmedEvent);
       }
-
-      onSuccess?.();
     } catch (err) {
       const errorMessage = err.response?.data?.error || err.message;
       console.error('Form submission error:', errorMessage);

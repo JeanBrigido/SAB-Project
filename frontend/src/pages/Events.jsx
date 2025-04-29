@@ -47,18 +47,17 @@ const Events = () => {
     setError(errorMessage);
   };
 
-  const handleEventUpdate = async (updatedEvent) => {
+  const handleEventUpdate = async () => {
     try {
       setLoading(true);
-      const token = await getAccessToken();
-      await updateEvent(editingEvent.id, updatedEvent, token);
       const updatedEvents = await fetchEvents();
       setEvents(updatedEvents);
       setEditingEvent(null);
       setShowForm(false);
+      setError(null);
     } catch (err) {
+      setError(err.message);
       console.error('Update error:', err);
-      setError(err.message || 'Failed to update event');
     } finally {
       setLoading(false);
     }
