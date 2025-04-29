@@ -10,7 +10,7 @@ const Events = () => {
   const [error, setError] = useState(null);
   const [editingEvent, setEditingEvent] = useState(null);
   const [showForm, setShowForm] = useState(false); // Add this line
-  const { state } = useAuthContext();
+  const { state, getAccessToken } = useAuthContext();
 
   useEffect(() => {
     const loadEvents = async () => {
@@ -47,16 +47,19 @@ const Events = () => {
     setError(errorMessage);
   };
 
-  const handleUpdate = async (e) => {
-    e.preventDefault();
+  const handleEventUpdate = async (updatedEvent) => {
     try {
-      const token = await state.getAccessToken();
-      await updateEvent(editingEvent.id, editingEvent, token);
-      await fetchEvents();
+      setLoading(true);
+      const token = await getAccessToken();
+      await updateEvent(editingEvent.id, updatedEvent, token);
+      const updatedEvents = await fetchEvents();
+      setEvents(updatedEvents);
       setEditingEvent(null);
+      setShowForm(false);
     } catch (error) {
       setError(error.message);
-      console.error('Update error:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -66,7 +69,7 @@ const Events = () => {
     }
 
     try {
-      const token = await state.getAccessToken();
+      const token = await getAccessToken();
       await deleteEvent(eventId, token);
       const updatedEvents = events.filter(event => event.id !== eventId);
       setEvents(updatedEvents);
@@ -89,8 +92,9 @@ const Events = () => {
 
       {showForm && (
         <EventForm 
-          onSuccess={handleEventCreation}
-          onError={handleEventError}
+        onSuccess={editingEvent ? handleEventUpdate : handleEventCreation}
+        onError={handleEventError}
+        editingEvent={editingEvent}
         />
       )}
 

@@ -1,18 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuthContext } from '@asgardeo/auth-react';
 import { createEvent } from '../services/eventService';
 import '../styles/EventForm.css';
 
-const EventForm = ({ onSuccess, onError }) => {
+const EventForm = ({ onSuccess, onError, editingEvent = null }) => {
   const [newEvent, setNewEvent] = useState({
-    event_name: '',
-    description: '',
-    event_date: '',
-    event_time: '',
-    location: ''
+    event_name: editingEvent?.event_name || '',
+    description: editingEvent?.description || '',
+    event_date: editingEvent?.event_date || '',
+    event_time: editingEvent?.event_time || '',
+    location: editingEvent?.location || ''
   });
-  const [error, setError] = useState(null);
-  const { state, getAccessToken } = useAuthContext();
+
+  useEffect(() => {
+    if (editingEvent) {
+      setNewEvent({
+        event_name: editingEvent.event_name,
+        description: editingEvent.description,
+        event_date: editingEvent.event_date,
+        event_time: editingEvent.event_time,
+        location: editingEvent.location
+      });
+    }
+  }, [editingEvent]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,28 +41,13 @@ const EventForm = ({ onSuccess, onError }) => {
         location: newEvent.location.trim()
       };
 
-      // Check required fields
-      if (!trimmedEvent.event_name || !trimmedEvent.description || 
-          !trimmedEvent.event_date || !trimmedEvent.event_time || 
-          !trimmedEvent.location) {
-        setError('All fields are required');
-        return;
+      if (editingEvent) {
+        await updateEvent(editingEvent.id, trimmedEvent, token);
+      } else {
+        await createEvent(trimmedEvent, token);
       }
 
-      const token = await getAccessToken();
-      const createdEvent = await createEvent(trimmedEvent, token);
-      
-      // Reset form
-      setNewEvent({
-        event_name: '',
-        description: '',
-        event_date: '',
-        event_time: '',
-        location: ''
-      });
-
-      // Pass the created event back to parent
-      onSuccess?.(createdEvent);
+      onSuccess?.();
     } catch (error) {
       setError(error.message);
       onError?.(error.message);
@@ -61,6 +56,7 @@ const EventForm = ({ onSuccess, onError }) => {
 
   return (
     <div className="event-form-container">
+      <h2>{editingEvent ? 'Edit Event' : 'Create New Event'}</h2>
       {error && <div className="error-message">{error}</div>}
       <form onSubmit={handleSubmit}>
         <div className="form-group">
@@ -124,15 +120,15 @@ const EventForm = ({ onSuccess, onError }) => {
 
         <div className="form-actions">
           <button type="submit" className="submit-button">
-Create Event
-        </button>
-        <button 
-          type="button" 
-          className="cancel-button"
-          onClick={() => onSuccess()} // This will close the form
-        >
-          Cancel
-</button>
+          {editingEvent ? 'Save Changes' : 'Create Event'}
+          </button>
+          <button 
+            type="button" 
+            className="cancel-button"
+            onClick={() => onSuccess?.()}
+          >
+            Cancel
+          </button>
         </div>
       </form>
     </div>
