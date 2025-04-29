@@ -39,8 +39,16 @@ router.get('/verse-of-the-day', async (req, res) => {
       messages
     );
 
+    if (!response?.choices?.[0]?.message?.content) {
+      throw new Error('Invalid response from Azure OpenAI');
+    }
+
     const content = response.choices[0].message.content.trim();
     const [text, reference] = content.split('\n').map(str => str.trim());
+
+    if (!text || !reference) {
+      throw new Error('Invalid verse format received');
+    }
 
     const verse = { text, reference };
 
@@ -52,8 +60,11 @@ router.get('/verse-of-the-day', async (req, res) => {
 
     res.json(verse);
   } catch (err) {
-    console.error('Error fetching verse of the day:', err);
-    res.status(500).json({ error: 'Failed to fetch verse' });
+    console.error('Error details:', err); // Enhanced error logging
+    res.status(500).json({ 
+      error: 'Failed to fetch verse',
+      details: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
   }
 });
 

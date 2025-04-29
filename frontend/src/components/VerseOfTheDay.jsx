@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_URL } from '../config/api';
 import '../styles/VerseOfTheDay.css';
 
 const VerseOfTheDay = () => {
@@ -13,11 +14,21 @@ const VerseOfTheDay = () => {
   const fetchVerse = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/verse-of-the-day');
-      if (!response.ok) throw new Error('Failed to fetch verse');
+      const response = await fetch(`${API_URL}/api/verse-of-the-day`, {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
       const data = await response.json();
       setVerse(data);
     } catch (err) {
+      console.error('Fetch error:', err);
       setError(err.message);
     } finally {
       setLoading(false);

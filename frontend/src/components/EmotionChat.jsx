@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { API_URL } from '../config/api';
 import '../styles/EmotionChat.css';
 
 const EmotionChat = () => {
@@ -16,11 +17,21 @@ const EmotionChat = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(`/api/verse-by-emotion?emotion=${emotion}`);
-      if (!response.ok) throw new Error('Failed to fetch verse');
+      const response = await fetch(`${API_URL}/api/verse-by-emotion?emotion=${emotion}`, {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch verse');
+      }
+      
       const data = await response.json();
       setVerse(data);
     } catch (err) {
+      console.error('Error:', err);
       setError(err.message);
     } finally {
       setLoading(false);

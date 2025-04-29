@@ -1,0 +1,1 @@
+export const API_URL = 'https://sab-cbaudvgcfab6g4gh.centralus-01.azurewebsites.net';
