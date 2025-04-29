@@ -28,9 +28,19 @@ const Events = () => {
     loadEvents();
   }, []);
 
-  const handleEventCreation = () => {
-    fetchEvents();
-    setShowForm(false); // Close form after successful creation
+  const handleEventCreation = async (newEvent) => {
+    try {
+      setLoading(true);
+      // Fetch latest events
+      const updatedEvents = await fetchEvents();
+      setEvents(updatedEvents);
+      setShowForm(false);
+      setError(null);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleEventError = (errorMessage) => {

@@ -16,16 +16,12 @@ const EventForm = ({ onSuccess, onError }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
-    
     try {
       if (!state.isAuthenticated) {
         setError('Please log in to create events');
         return;
       }
 
-      const token = await getAccessToken();
-      
       // Validate form data
       const trimmedEvent = {
         event_name: newEvent.event_name.trim(),
@@ -43,9 +39,10 @@ const EventForm = ({ onSuccess, onError }) => {
         return;
       }
 
-      await createEvent(trimmedEvent, token);
+      const token = await getAccessToken();
+      const createdEvent = await createEvent(trimmedEvent, token);
       
-      // Reset form and notify parent
+      // Reset form
       setNewEvent({
         event_name: '',
         description: '',
@@ -53,7 +50,9 @@ const EventForm = ({ onSuccess, onError }) => {
         event_time: '',
         location: ''
       });
-      onSuccess?.();
+
+      // Pass the created event back to parent
+      onSuccess?.(createdEvent);
     } catch (error) {
       setError(error.message);
       onError?.(error.message);
