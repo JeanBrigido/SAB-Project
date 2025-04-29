@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useAuthContext } from '@asgardeo/auth-react';
-import { validateEvent } from '../utils/validation';
 import { createEvent } from '../services/eventService';
 import '../styles/EventForm.css';
 
@@ -12,24 +11,7 @@ const EventForm = ({ onSuccess, onError }) => {
     event_time: '',
     location: ''
   });
-
-  const handleChange = (e) => {
-    setNewEvent({
-      ...newEvent,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const resetForm = () => {
-    setNewEvent({
-      event_name: '',
-      description: '',
-      event_date: '',
-      event_time: '',
-      location: ''
-    });
-  };
-
+  const [error, setError] = useState(null);
   const { state, getAccessToken } = useAuthContext();
 
   const handleSubmit = async (e) => {
@@ -37,12 +19,13 @@ const EventForm = ({ onSuccess, onError }) => {
     setError(null);
     
     try {
-      // Check authentication
       if (!state.isAuthenticated) {
         setError('Please log in to create events');
         return;
       }
 
+      const token = await getAccessToken();
+      
       // Validate form data
       const trimmedEvent = {
         event_name: newEvent.event_name.trim(),
@@ -52,15 +35,24 @@ const EventForm = ({ onSuccess, onError }) => {
         location: newEvent.location.trim()
       };
 
-      // Validate all required fields
-      validateEvent(trimmedEvent);
+      // Check required fields
+      if (!trimmedEvent.event_name || !trimmedEvent.description || 
+          !trimmedEvent.event_date || !trimmedEvent.event_time || 
+          !trimmedEvent.location) {
+        setError('All fields are required');
+        return;
+      }
 
-      // Get fresh token and create event
-      const token = await getAccessToken();
       await createEvent(trimmedEvent, token);
       
       // Reset form and notify parent
-      resetForm();
+      setNewEvent({
+        event_name: '',
+        description: '',
+        event_date: '',
+        event_time: '',
+        location: ''
+      });
       onSuccess?.();
     } catch (error) {
       setError(error.message);
@@ -69,74 +61,71 @@ const EventForm = ({ onSuccess, onError }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="event-form">
-      <div className="form-group">
-        <label htmlFor="event_name">Event Name *</label>
-        <input
-          type="text"
-          id="event_name"
-          name="event_name"
-          value={newEvent.event_name}
-          onChange={handleChange}
-          placeholder="Enter event name"
-          required
-        />
-      </div>
+    <div className="event-form-container">
+      {error && <div className="error-message">{error}</div>}
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label htmlFor="event_name">Event Name</label>
+          <input
+            type="text"
+            id="event_name"
+            name="event_name"
+            value={newEvent.event_name}
+            onChange={(e) => setNewEvent({ ...newEvent, event_name: e.target.value })}
+            required
+          />
+        </div>
 
-      <div className="form-group">
-        <label htmlFor="description">Description *</label>
-        <textarea
-          id="description"
-          name="description"
-          value={newEvent.description}
-          onChange={handleChange}
-          placeholder="Enter event description"
-          rows="4"
-          required
-        />
-      </div>
+        <div className="form-group">
+          <label htmlFor="description">Description</label>
+          <textarea
+            id="description"
+            name="description"
+            value={newEvent.description}
+            onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
+            required
+          />
+        </div>
 
-      <div className="form-group">
-        <label htmlFor="event_date">Date *</label>
-        <input
-          type="date"
-          id="event_date"
-          name="event_date"
-          value={newEvent.event_date}
-          onChange={handleChange}
-          min={new Date().toISOString().split('T')[0]}
-          required
-        />
-      </div>
+        <div className="form-group">
+          <label htmlFor="event_date">Date</label>
+          <input
+            type="date"
+            id="event_date"
+            name="event_date"
+            value={newEvent.event_date}
+            onChange={(e) => setNewEvent({ ...newEvent, event_date: e.target.value })}
+            required
+          />
+        </div>
 
-      <div className="form-group">
-        <label htmlFor="event_time">Time *</label>
-        <input
-          type="time"
-          id="event_time"
-          name="event_time"
-          value={newEvent.event_time}
-          onChange={handleChange}
-          required
-        />
-      </div>
+        <div className="form-group">
+          <label htmlFor="event_time">Time</label>
+          <input
+            type="time"
+            id="event_time"
+            name="event_time"
+            value={newEvent.event_time}
+            onChange={(e) => setNewEvent({ ...newEvent, event_time: e.target.value })}
+            required
+          />
+        </div>
 
-      <div className="form-group">
-        <label htmlFor="location">Location *</label>
-        <input
-          type="text"
-          id="location"
-          name="location"
-          value={newEvent.location}
-          onChange={handleChange}
-          placeholder="Enter event location"
-          required
-        />
-      </div>
+        <div className="form-group">
+          <label htmlFor="location">Location</label>
+          <input
+            type="text"
+            id="location"
+            name="location"
+            value={newEvent.location}
+            onChange={(e) => setNewEvent({ ...newEvent, location: e.target.value })}
+            required
+          />
+        </div>
 
-      <div className="form-actions">
-        <button type="submit" className="submit-button">
-          Create Event
+        <div className="form-actions">
+          <button type="submit" className="submit-button">
+Create Event
         </button>
         <button 
           type="button" 
@@ -144,9 +133,10 @@ const EventForm = ({ onSuccess, onError }) => {
           onClick={() => onSuccess()} // This will close the form
         >
           Cancel
-        </button>
-      </div>
-    </form>
+</button>
+        </div>
+      </form>
+    </div>
   );
 };
 
