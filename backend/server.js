@@ -1,9 +1,9 @@
 import dotenv from 'dotenv';
 import express from 'express';
-import cors from 'cors';
+import cors from 'express';
 import eventRoutes from './routes/events.js';
 import smallGroupRoutes from './routes/small_groups.js';
-import contactRoutes from './routes/contact.js';
+import contactRoutes from './routes/contact_us.js';
 import authRoutes from './routes/auth.js';
 import verseRoutes from './routes/verse.js';
 
