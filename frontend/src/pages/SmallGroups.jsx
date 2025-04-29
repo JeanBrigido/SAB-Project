@@ -277,37 +277,100 @@ const SmallGroups = () => {
         <div className="groups-grid">
           {groups.map((group) => (
             <div key={group.id} className="group-card">
-              <h3>{group.name}</h3>
-              <p className="group-bio">{group.bio}</p>
-              <div className="group-preview-info">
-                <p><FaCalendar className="info-icon" /> {group.meeting_days}</p>
-                <p><FaClock className="info-icon" /> {group.meeting_time_range}</p>
-                <p><FaMapMarkerAlt className="info-icon" /> {group.location}</p>
-              </div>
-              <div className="button-group">
-                <button 
-                  className="view-group-btn"
-                  onClick={() => setSelectedGroup(group)}
-                >
-                  View
-                </button>
-                {state.isAuthenticated && (
-                  <>
+              {editingGroup?.id === group.id ? (
+                // Edit form
+                <form onSubmit={handleUpdate} className="edit-form-inline">
+                  <div className="form-group">
+                    <label>Group Name:</label>
+                    <input
+                      type="text"
+                      value={editingGroup.name}
+                      onChange={(e) => setEditingGroup({...editingGroup, name: e.target.value})}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Bio:</label>
+                    <textarea
+                      value={editingGroup.bio}
+                      onChange={(e) => setEditingGroup({...editingGroup, bio: e.target.value})}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Meeting Days:</label>
+                    <input
+                      type="text"
+                      value={editingGroup.meeting_days}
+                      onChange={(e) => setEditingGroup({...editingGroup, meeting_days: e.target.value})}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Time Range:</label>
+                    <input
+                      type="text"
+                      value={editingGroup.meeting_time_range}
+                      onChange={(e) => setEditingGroup({...editingGroup, meeting_time_range: e.target.value})}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Location:</label>
+                    <input
+                      type="text"
+                      value={editingGroup.location}
+                      onChange={(e) => setEditingGroup({...editingGroup, location: e.target.value})}
+                      required
+                    />
+                  </div>
+                  <div className="button-group">
+                    <button type="submit" className="primary-button">Save</button>
                     <button 
-                      className="edit-btn"
-                      onClick={() => setEditingGroup(group)}
+                      type="button" 
+                      className="cancel-button"
+                      onClick={() => setEditingGroup(null)}
                     >
-                      Edit
+                      Cancel
                     </button>
+                  </div>
+                </form>
+              ) : (
+                // Normal card view
+                <>
+                  <h3>{group.name}</h3>
+                  <p className="group-bio">{group.bio}</p>
+                  <div className="group-preview-info">
+                    <p><FaCalendar className="info-icon" /> {group.meeting_days}</p>
+                    <p><FaClock className="info-icon" /> {group.meeting_time_range}</p>
+                    <p><FaMapMarkerAlt className="info-icon" /> {group.location}</p>
+                  </div>
+                  <div className="button-group">
                     <button 
-                      className="delete-btn"
-                      onClick={() => handleDelete(group.id)}
+                      className="view-button"
+                      onClick={() => setSelectedGroup(group)}
                     >
-                      Delete
+                      View Details
                     </button>
-                  </>
-                )}
-              </div>
+                    {state.isAuthenticated && (
+                      <>
+                        <button 
+                          className="edit-button"
+                          onClick={() => setEditingGroup(group)}
+                        >
+                          Edit
+                        </button>
+                        <button 
+                          className="delete-button"
+                          onClick={() => handleDelete(group.id)}
+                        >
+                          Delete
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
           ))}
         </div>
