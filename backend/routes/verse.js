@@ -24,6 +24,11 @@ const client = new OpenAIClient(
 
 router.get('/verse-of-the-day', async (req, res) => {
   try {
+    // Verify Azure OpenAI configuration
+    if (!process.env.AZURE_AI_ENDPOINT || !process.env.AZURE_AI_KEY || !process.env.AZURE_DEPLOYMENT_NAME) {
+      throw new Error('Missing Azure OpenAI configuration');
+    }
+
     // Check cache first
     if (isCacheValid()) {
       return res.json(dailyVerseCache.verse);
@@ -34,36 +39,42 @@ router.get('/verse-of-the-day', async (req, res) => {
       { role: "user", content: "Give me a short Bible verse of the day." }
     ];
 
-    const response = await client.getChatCompletions(
-      process.env.AZURE_DEPLOYMENT_NAME,
-      messages
-    );
+    try {
+      const response = await client.getChatCompletions(
+        process.env.AZURE_DEPLOYMENT_NAME,
+        messages
+      );
 
-    if (!response?.choices?.[0]?.message?.content) {
-      throw new Error('Invalid response from Azure OpenAI');
+      if (!response?.choices?.[0]?.message?.content) {
+        throw new Error('Invalid response from Azure OpenAI');
+      }
+
+      const content = response.choices[0].message.content.trim();
+      const [text, reference] = content.split('\n').map(str => str.trim());
+
+      if (!text || !reference) {
+        throw new Error('Invalid verse format received');
+      }
+
+      const verse = { text, reference };
+
+      // Update cache
+      dailyVerseCache = {
+        verse,
+        timestamp: new Date()
+      };
+
+      res.json(verse);
+    } catch (aiError) {
+      console.error('Azure OpenAI Error:', aiError);
+      throw new Error('Failed to communicate with Azure OpenAI');
     }
-
-    const content = response.choices[0].message.content.trim();
-    const [text, reference] = content.split('\n').map(str => str.trim());
-
-    if (!text || !reference) {
-      throw new Error('Invalid verse format received');
-    }
-
-    const verse = { text, reference };
-
-    // Update cache
-    dailyVerseCache = {
-      verse,
-      timestamp: new Date()
-    };
-
-    res.json(verse);
   } catch (err) {
-    console.error('Error details:', err); // Enhanced error logging
+    console.error('Error details:', err);
     res.status(500).json({ 
       error: 'Failed to fetch verse',
-      details: process.env.NODE_ENV === 'development' ? err.message : undefined
+      details: process.env.NODE_ENV === 'development' ? err.message : undefined,
+      code: err.code || 'UNKNOWN_ERROR'
     });
   }
 });
@@ -95,6 +106,18 @@ router.get('/verse-by-emotion', async (req, res) => {
     console.error('Error fetching verse by emotion:', err);
     res.status(500).json({ error: 'Failed to fetch verse' });
   }
+});
+
+router.get('/test', (req, res) => {
+  res.json({ 
+    status: 'ok',
+    env: process.env.NODE_ENV,
+    hasAzureConfig: {
+      endpoint: !!process.env.AZURE_AI_ENDPOINT,
+      key: !!process.env.AZURE_AI_KEY,
+      deployment: !!process.env.AZURE_DEPLOYMENT_NAME
+    }
+  });
 });
 
 export default router;
