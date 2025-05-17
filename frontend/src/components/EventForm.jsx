@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { useAuthContext } from '@asgardeo/auth-react';
-import { createEvent, updateEvent } from '../services/eventService';
-import '../styles/EventForm.css';
+import React, { useState, useEffect } from "react";
+import { useAuth } from "../contexts/AuthContext"; // Updated import
+import { createEvent, updateEvent } from "../services/eventService";
+import "../styles/EventForm.css";
 
 const EventForm = ({ onSuccess, onError, editingEvent = null, onCancel }) => {
   const [error, setError] = useState(null);
-  const { state, getAccessToken } = useAuthContext();
+  const { state, getAccessToken } = useAuth();
 
   const [newEvent, setNewEvent] = useState({
     event_name: editingEvent?.event_name || '',

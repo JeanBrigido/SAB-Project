@@ -1,19 +1,20 @@
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { Navigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
-const ProtectedRoute = ({ children, allowedRoles = [] }) => {
-  const { user, userRole, loading } = useAuth();
+const ProtectedRoute = ({ children, requiredRole }) => {
+  const { user, churchMember, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="loading">Loading...</div>;
   }
 
   if (!user) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (allowedRoles.length > 0 && !allowedRoles.includes(userRole)) {
-    return <Navigate to="/" />;
+  if (requiredRole && (!churchMember || churchMember.roles.name !== requiredRole)) {
+    return <Navigate to="/" replace />;
   }
 
   return children;

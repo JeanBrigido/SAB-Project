@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAuthContext } from "@asgardeo/auth-react";
+
 import { Navigate } from 'react-router-dom';
 import '../styles/EventManagement.css';
 

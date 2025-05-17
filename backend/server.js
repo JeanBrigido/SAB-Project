@@ -47,7 +47,7 @@ console.log('✅ Environment:', process.env.NODE_ENV);
 console.log('✅ Azure OpenAI Endpoint configured:', !!process.env.AZURE_AI_ENDPOINT);
 
 // Routes
-app.use('/auth', authRoutes);
+app.use('/api/auth', authRoutes);
 app.use('/events', eventRoutes);
 app.use('/small-groups', smallGroupRoutes);
 app.use('/contact-us', contactRoutes);
@@ -69,6 +69,7 @@ app.use((req, res) => {
 
 // Server startup with error handling
 const server = app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
   console.log(`✅ Server running on port ${PORT}`);
 }).on('error', (err) => {
   console.error('Server startup error:', err);

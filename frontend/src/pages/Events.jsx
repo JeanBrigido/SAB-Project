@@ -1,62 +1,64 @@
-import React, { useState, useEffect } from 'react';
-import { useAuthContext } from '@asgardeo/auth-react';
-import { fetchEvents, createEvent, updateEvent, deleteEvent } from '../services/eventService';
-import EventForm from '../components/EventForm';
+import React, { useState, useEffect } from "react";
+import api from "../config/axios";
+import { useAuth } from "../contexts/AuthContext"; // Updated import
+import { Link } from "react-router-dom";
 import '../styles/Events.css';
+import { FaCalendar, FaClock, FaMapMarkerAlt } from 'react-icons/fa';
+import { config } from '../config/config';
+import EventForm from '../components/EventForm';
+
+const BASE_URL = `${config.apiUrl}/events`;
 
 const Events = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [editingEvent, setEditingEvent] = useState(null);
-  const [showForm, setShowForm] = useState(false); // Add this line
-  const { state, getAccessToken } = useAuthContext();
+  const [showForm, setShowForm] = useState(false);
+  const { user, churchMember } = useAuth();
+  
+  const isAdmin = churchMember?.roles?.name === 'admin';
 
   useEffect(() => {
-    const loadEvents = async () => {
-      try {
-        setLoading(true);
-        const data = await fetchEvents();
-        setEvents(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadEvents();
   }, []);
 
-  const handleEventCreation = async (newEvent) => {
+  const loadEvents = async () => {
     try {
       setLoading(true);
-      // Fetch latest events
-      const updatedEvents = await fetchEvents();
-      setEvents(updatedEvents);
-      setShowForm(false);
-      setError(null);
+      const response = await api.get('/events');
+      setEvents(response.data);
     } catch (err) {
-      setError(err.message);
+      setError('Failed to load events');
+      console.error('Fetch error:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleEventError = (errorMessage) => {
-    setError(errorMessage);
-  };
-
-  const handleEventUpdate = async () => {
+  const handleEventCreation = async (eventData) => {
     try {
       setLoading(true);
-      const updatedEvents = await fetchEvents();
-      setEvents(updatedEvents);
+      await api.post('/events', eventData);
+      await loadEvents();
+      setShowForm(false);
+    } catch (err) {
+      setError('Failed to create event');
+      console.error('Creation error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEventUpdate = async (eventData) => {
+    try {
+      setLoading(true);
+      await api.put(`/events/${eventData.id}`, eventData);
+      await loadEvents();
       setEditingEvent(null);
       setShowForm(false);
-      setError(null);
     } catch (err) {
-      setError(err.message);
+      setError('Failed to update event');
       console.error('Update error:', err);
     } finally {
       setLoading(false);
@@ -64,20 +66,16 @@ const Events = () => {
   };
 
   const handleDelete = async (eventId) => {
-    if (!window.confirm('Are you sure you want to delete this event?')) {
+    if (!isAdmin || !window.confirm('Are you sure you want to delete this event?')) {
       return;
     }
 
     try {
       setLoading(true);
-      const token = await getAccessToken();
-      await deleteEvent(eventId, token);
-      
-      // Update local state after successful deletion
+      await api.delete(`/events/${eventId}`);
       setEvents(prevEvents => prevEvents.filter(event => event.id !== eventId));
-      setError(null);
     } catch (err) {
-      setError(err.message || 'Failed to delete event');
+      setError('Failed to delete event');
       console.error('Delete error:', err);
     } finally {
       setLoading(false);
@@ -93,13 +91,13 @@ const Events = () => {
   return (
     <div className="page-container">
       <div className="page-header">
-        <h1>Upcoming Events</h1>
-        <p className="subtitle">Join us for these upcoming events and activities at Grace Church.</p>
+        <h1>Events</h1>
+        <p className="subtitle">Join us for our upcoming events and activities.</p>
       </div>
 
       <div className="events-container">
         <div className="button-container">
-          {state.isAuthenticated && (
+          {isAdmin && (
             <button 
               className="primary-button"
               onClick={() => setShowForm(true)}
@@ -112,7 +110,7 @@ const Events = () => {
         {showForm && (
           <EventForm 
             onSuccess={editingEvent ? handleEventUpdate : handleEventCreation}
-            onError={handleEventError}
+            onError={setError}
             editingEvent={editingEvent}
             onCancel={handleCancel}
           />
@@ -127,11 +125,17 @@ const Events = () => {
               <h3>{event.event_name}</h3>
               <p className="event-description">{event.description}</p>
               <div className="event-details">
-                <p><span className="detail-label">Date:</span> {event.event_date}</p>
-                <p><span className="detail-label">Time:</span> {event.event_time}</p>
-                <p><span className="detail-label">Location:</span> {event.location}</p>
+                <p>
+                  <FaCalendar className="icon" /> {event.event_date}
+                </p>
+                <p>
+                  <FaClock className="icon" /> {event.event_time}
+                </p>
+                <p>
+                  <FaMapMarkerAlt className="icon" /> {event.location}
+                </p>
               </div>
-              {state.isAuthenticated && (
+              {isAdmin && (
                 <div className="event-actions">
                   <button 
                     className="edit-button"

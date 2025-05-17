@@ -6,7 +6,7 @@ const About = () => {
     <div className="about-container">
       <section className="about-hero">
         <h1>Welcome to Senda-A-Betel Church</h1>
-        <p>A Spirit-filled community sharing God's love since 1985</p>
+        <p>A Spirit-filled community sharing God's love since X</p>
       </section>
 
       <section className="about-section">
@@ -20,7 +20,7 @@ const About = () => {
         <h2>What We Believe</h2>
         <ul>
           <li>Salvation through faith in Jesus Christ</li>
-          <li>The baptism of the Holy Spirit with the evidence of speaking in tongues</li>
+          <li>The baptism of the Holy Spirit</li>
           <li>Divine healing through the power of God</li>
           <li>The importance of water baptism</li>
           <li>The soon return of Jesus Christ</li>
@@ -32,16 +32,15 @@ const About = () => {
         <div className="service-times">
           <div className="service-item">
             <h3>Sunday Services</h3>
-            <p>10:00 AM - Main Service</p>
-            <p>6:00 PM - Evening Service</p>
+            <p>10:00 AM - 12:00 PM Main Service</p>
           </div>
           <div className="service-item">
-            <h3>Wednesday</h3>
-            <p>7:00 PM - Bible Study & Prayer</p>
+            <h3>Tuesday</h3>
+            <p>7:00 PM - 9:00 PM Service</p>
           </div>
           <div className="service-item">
-            <h3>Friday</h3>
-            <p>7:30 PM - Youth Service</p>
+            <h3>Thursday</h3>
+            <p>7:00 PM - 8:00 PM Prayer Service</p>
           </div>
         </div>
       </section>
