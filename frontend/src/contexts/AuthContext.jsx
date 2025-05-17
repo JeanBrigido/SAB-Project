@@ -82,7 +82,7 @@ export function AuthProvider({ children }) {
   const signup = async (email, password) => {
     try {
       // Add your signup API call here
-      const response = await fetch('/auth/signup', {
+      const response = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
